@@ -132,6 +132,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # This line might be unnecessary if you're not using a 'static' directory within your project
+    'C:/Users/Yash/Documents/EMS GIT/SecManage/security/secman/static',  # Make sure the path is correct
+    os.path.join(BASE_DIR, 'node_modules') # path for full calendar
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
