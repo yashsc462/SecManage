@@ -1,0 +1,306 @@
+{% extends 'admin/basead.html' %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Sheet</title>
+    <style>
+     body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+}
+
+.card {
+    width: 95%;
+    margin: 2% auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2.5em;
+    margin: 20px 0;
+    animation: slideIn 1s ease-in-out;
+}
+
+.table-container {
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    margin: 0 2%;
+    padding: 20px;
+    animation: fadeIn 1s ease-in;
+    border-radius: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+    border-radius: 25px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+    color: #333;
+    
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    background-color: #333;
+    color: #ffffff;
+    z-index: 1;
+}
+
+thead th:first-child {
+    border-top-left-radius: 8px;
+}
+
+thead th:last-child {
+    border-top-right-radius: 8px;
+}
+
+tbody td:first-child {
+    border-bottom-left-radius: 8px;
+}
+
+tbody td:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+td {
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+td:hover {
+    background-color: #e9ecef;
+}
+
+/* Button Styling */
+.btn {
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: white;
+    background-color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #555;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.submit-btn {
+    display: block;
+    /* width: 100%; */
+    /* max-width: 200px; */
+    margin: auto;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    /* margin: auto; */
+}
+
+.submit-btn:hover {
+    background-color: #555;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form-row input[type="date"], .form-row select {
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%; /* Full width for buttons on small screens */
+        margin-bottom: 10px;
+    }
+}
+
+.notification {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    padding: 15px;
+    background-color: #4caf50;
+    color: white;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1 class="mb-4">Admin Salary Sheet</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Basic Salary</th>
+                            <th>Special Allowance</th>
+                            <th>Total</th>
+                            <th>Conveyance Allowance</th>
+                            <th>Education Allowance</th>
+                            <th>Travelling Allowance</th>
+                            <th>Hours Daily Duty</th>
+                            <th>Total B</th>
+                            <th>HRA</th>
+                            <th>PF</th>
+                            <th>Gratuity</th>
+                            <th>Leave with Wages</th>
+                            <th>ESIC</th>
+                            <th>Paid Holiday</th>
+                            <th>Bonus</th>
+                            <th>Uniform</th>
+                            <th>Total C</th>
+                            <th>Food Allowance</th>
+                            <th>Price Partial Uniform</th>
+                            <th>Actual Salary</th>
+                            <th>Approved Advance</th>
+                            <!-- <th>Update</th> -->
+                            <th>Generate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in salary_with_actual %}
+                        <tr>
+                            <td>{{ entry.salary.employee }}</td>
+                           <td><input type="text" name="basic_salary_{{ entry.salary.id }}" value="{{ entry.salary.basic_salary }}" class="form-control"></td>
+                            <td><input type="text" name="special_allowance_{{ entry.salary.id }}" value="{{ entry.salary.special_allowance }}" class="form-control"></td>
+                            <td><input type="text" name="total_{{ entry.salary.id }}" value="{{ entry.salary.total }}" class="form-control"></td>
+                            <td><input type="text" name="conveyance_allowance_{{ entry.salary.id }}" value="{{ entry.salary.conveyance_allowance }}" class="form-control"></td>
+                            <td><input type="text" name="education_allowance_{{ entry.salary.id }}" value="{{ entry.salary.education_allowance }}" class="form-control"></td>
+                            <td><input type="text" name="travelling_allowance_{{ entry.salary.id }}" value="{{ entry.salary.travelling_allowance }}" class="form-control"></td>
+                            <td><input type="text" name="hours_daily_duty_{{ entry.salary.id }}" value="{{ entry.salary.hours_daily_duty }}" class="form-control"></td>
+                            <td><input type="text" name="total_b_{{ entry.salary.id }}" value="{{ entry.salary.total_b }}" class="form-control"></td>
+                            <td><input type="text" name="hra_{{ entry.salary.id }}" value="{{ entry.salary.hra }}" class="form-control"></td>
+                            <td><input type="text" name="pf_{{ entry.salary.id }}" value="{{ entry.salary.pf }}" class="form-control"></td>
+                            <td><input type="text" name="gratuity_{{ entry.salary.id }}" value="{{ entry.salary.gratuity }}" class="form-control"></td>
+                            <td><input type="text" name="leave_with_wages_{{ entry.salary.id }}" value="{{ entry.salary.leave_with_wages }}" class="form-control"></td>
+                            <td><input type="text" name="esic_{{ entry.salary.id }}" value="{{ entry.salary.esic }}" class="form-control"></td>
+                            <td><input type="text" name="paid_holiday_{{ entry.salary.id }}" value="{{ entry.salary.paid_holiday }}" class="form-control"></td>
+                            <td><input type="text" name="bonus_{{ entry.salary.id }}" value="{{ entry.salary.bonus }}" class="form-control"></td>
+                            <td><input type="text" name="uniform_{{ entry.salary.id }}" value="{{ entry.salary.uniform }}" class="form-control"></td>
+                            <td><input type="text" name="total_c_{{ entry.salary.id }}" value="{{ entry.salary.total_c }}" class="form-control"></td>
+                            <td><input type="text" name="food_allowance_{{ entry.salary.id }}" value="{{ entry.salary.food_allowance }}" class="form-control"></td>
+                            <td><input type="text" name="price_partial_uniform_{{ entry.salary.id }}" value="{{ entry.salary.price_partial_uniform }}" class="form-control"></td>
+                            <td>{{ entry.actual_salary }}</td>
+                            <td>{{ entry.approved_advance }}</td>
+                            <!-- <td>
+                                <a href="{% url 'update_salary' entry.salary.id %}" class="btn btn-primary btn-sm">Edit</a>
+                            </td> -->
+                            <td>
+                                <a href="{% url 'download_salary_slip' salary_id=entry.salary.id %}" class="btn btn-primary btn-sm">Download Slip</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <button type="submit" class="submit-btn">Save Changes</button>
+        </form>
+    </div>
+    
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            
+            form.addEventListener('submit', function(event) {
+                // Prevent the default form submission to show the notification first
+                event.preventDefault();
+                
+                // Show the success notification
+                showNotification('Changes saved successfully!');
+    
+                // Optionally, after a short delay, submit the form normally
+                setTimeout(function() {
+                    form.submit();
+                }, 1500); // Delay form submission for 1.5 seconds (you can adjust this)
+            });
+    
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerText = message;
+    
+                // Add some basic styles for the notification
+                notification.style.position = 'fixed';
+                notification.style.top = '10px';
+                notification.style.right = '10px';
+                notification.style.padding = '15px';
+                notification.style.backgroundColor = '#4caf50';
+                notification.style.color = 'white';
+                notification.style.borderRadius = '4px';
+                notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+                notification.style.zIndex = '1000';
+                
+                document.body.appendChild(notification);
+    
+                // Remove the notification after 3 seconds
+                setTimeout(function() {
+                    notification.remove();
+                }, 3000);
+            }
+        });
+    </script>
+    
+</body>
+</html>
+{% endblock content %}

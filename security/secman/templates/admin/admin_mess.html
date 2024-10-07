@@ -1,0 +1,121 @@
+{% extends 'admin/basead.html' %}
+
+{% block content %}
+<style>
+    .card {
+        width: 95%;
+        margin: 2% auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+    form {
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .input-group {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    label {
+        font-size: 1.1em;
+        color: #333;
+        margin-right: 10px;
+        white-space: nowrap;
+    }
+    input {
+        flex-grow: 1;
+        padding: 10px;
+        font-size: 1.0em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-right: 10px;
+    }
+    button {
+        padding: 10px;
+        font-size: 1.0em;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        white-space: nowrap;
+    }
+    button:hover {
+        background-color: #333;
+    }
+
+    /* Notification styling */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 1em;
+        z-index: 1000;
+        display: none;
+    }
+</style>
+
+<div class="card">
+    <h1>Update Food Allowance for {{ employee.first_name }} {{ employee.last_name }}</h1>
+    <form method="post" id="updateForm">
+        {% csrf_token %}
+        <div class="input-group">
+            <label for="food_allowance">Current Food Allowance:</label>
+            <input type="text" id="food_allowance" name="food_allowance" value="{{ salary_detail.food_allowance }}">
+            <button type="submit">Update</button>
+        </div>
+    </form>
+</div>
+
+<!-- Notification div -->
+<div class="notification" id="notification">Amount submitted successfully!</div>
+
+<!-- Add the JavaScript -->
+<script>
+    document.getElementById("updateForm").onsubmit = function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Submit the form via AJAX
+        const formData = new FormData(this);
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '', true); // Send the form to the current page
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Show notification on success
+                const notification = document.getElementById('notification');
+                notification.style.display = 'block';
+
+                // Hide the notification after 3 seconds
+                setTimeout(function() {
+                    notification.style.display = 'none';
+                    window.location.href = "{% url 'dashboard' %}"; // Redirect to dashboard.html
+                }, 3000);
+            }
+        };
+        
+        xhr.send(formData);
+    };
+</script>
+
+{% endblock content %}

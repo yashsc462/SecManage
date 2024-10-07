@@ -1,0 +1,100 @@
+{% extends 'FO/basefo.html' %}
+
+{% block content %}
+
+<style>
+    .card {
+        width: 95%;
+        margin: 2% auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    /* Flexbox container to hold the input fields in one row */
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .input-group, .form-row div {
+        width: 48%; /* Each field will take up 48% to allow for margin between them */
+    }
+
+    label {
+        margin-bottom: 10px;
+        font-size: 1.0em;
+        color: #333;
+        display: block;
+    }
+
+    select, input {
+        width: 100%; /* Ensure the inputs and select fields take up the full width of their containers */
+        padding: 10px;
+        font-size: 1.0em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    /* Button styling */
+    button {
+        padding: 10px 20px;
+        font-size: 1.1em;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        display: block;
+        margin: 20px auto 0 auto; /* Center the button horizontally */
+    }
+
+    button:hover {
+        background-color: #555;
+        transform: scale(1.04);
+    }
+</style>
+
+<div class="card">
+    <h1>Update Partial Uniform for {{ employee.first_name }} {{ employee.last_name }}</h1>
+    
+    <form method="POST" action="{% url 'partial_uniform' employee.emp_id %}">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <!-- Uniform Item -->
+            <div class="input-group">
+                <label for="partialuniform">Uniform Item:</label>
+                <select id="partialuniform" name="partialuniform">
+                    <option value="shirt" {% if employees.partialuniform == "shirt" %}selected{% endif %}>Shirt</option>
+                    <option value="pant" {% if employees.partialuniform == "pant" %}selected{% endif %}>Pant</option>
+                    <option value="belt" {% if employees.partialuniform == "belt" %}selected{% endif %}>Belt</option>
+                    <option value="stick" {% if employees.partialuniform == "stick" %}selected{% endif %}>Stick</option>
+                    <option value="whistle" {% if employees.partialuniform == "whistle" %}selected{% endif %}>Whistle</option>
+                    <option value="hat" {% if employees.partialuniform == "hat" %}selected{% endif %}>Hat</option>
+                </select>
+            </div>
+
+            <!-- Price Field -->
+            <div>
+                <label for="price_partial_uniform">Price:</label>
+                <input type="text" id="price_partial_uniform" name="price_partial_uniform" value="{{ salary_detail.price_partial_uniform }}" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Update Partial Uniform</button>
+    </form>
+</div>
+
+{% endblock content %}

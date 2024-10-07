@@ -1,0 +1,585 @@
+{% extends 'admin/basead.html' %}
+
+{% block content %}
+
+<style>
+
+body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .card {
+        width: 95%;
+        margin: 2% auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 1s ease-in;
+    }
+
+    .card h1 {
+        text-align: center;
+        color: #333333;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        animation: slideIn 1s ease-in-out;
+    }
+
+    .card h2 {
+        text-align: center;
+        color: #333333;
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        animation: slideIn 1s ease-in-out;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    ul.emp {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    li {
+        flex: 1 1 calc(50% - 20px);
+        box-sizing: border-box;
+    }
+
+    label {
+        font-size: 14px;
+        color: #666;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="time"],
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="date"],
+    textarea,
+    select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    input[type="time"]:focus,
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="email"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #312929;
+        outline: none;
+        box-shadow: 0 0 8px rgba(49, 41, 41, 0.5);
+        transform: scale(1.02);
+    }
+
+    button,
+    .submit-button {
+        padding: 10px 20px;
+        margin: 0 auto; /* Center the button horizontally */
+        display: block; /* Ensure it takes up the full width of its container */
+        border: none;
+        border-radius: 4px;
+        background-color: #312929;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+
+    button:hover,
+    .submit-button:hover {
+        background-color: #000000;
+        transform: scale(1.05);
+    }
+
+    button:active,
+    .submit-button:active {
+        background-color: #2e3741;
+    }
+
+    .popup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #28a745;
+        color: white;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        display: none;
+        z-index: 1000;
+        animation: slideIn 1s ease-in-out;
+    }
+
+    .popup.error {
+        background-color: #dc3545;
+    }
+
+    .popup .close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    .checkbox-group,
+    .work-arrangements,
+    .bank-details {
+        margin-bottom: 20px;
+        margin-top: 30px;
+    }
+
+    .section-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+</style>
+
+<body>
+    <div class="card">
+
+        <h1>Update Employee Details</h1>
+
+        
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<form action="{% url 'admin_update_emp' employee.emp_id %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <ul class="emp">
+        <li>
+        <br> <hr> <br>
+                <h1>Personal Details</h1>
+        </li>
+        <ul class="emp">
+
+    <li>
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ employee.first_name }}" required>
+    </li>
+
+    <li>
+        <label for="middle_name">Middle Name:</label>
+        <input type="text" id="middle_name" name="middle_name" class="form-control" value="{{ employee.middle_name }}">
+    </li>
+
+    <li>
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ employee.last_name }}" required>
+    </li>
+
+    <li>
+        <label for="contact_number">Contact Number:</label>
+        <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{ employee.contact_number }}" required>
+    </li>
+    
+
+    <li>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" class="form-control" value="{{ employee.age }}" required>
+    </li>
+
+    <li>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" class="form-control" required>
+            <option value="Male" {% if employee.gender == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if employee.gender == 'Female' %}selected{% endif %}>Female</option>
+            <option value="Other" {% if employee.gender == 'Other' %}selected{% endif %}>Other</option>
+        </select>
+    </li>
+
+    <li>
+        <label for="current_address">Current Address:</label>
+        <textarea id="current_address" name="current_address" class="form-control" required>{{ employee.current_address }}</textarea>
+    </li>
+
+    <li>
+        <label for="permanent_address">Permanent Address:</label>
+        <textarea id="permanent_address" name="permanent_address" class="form-control" required>{{ employee.permanent_address }}</textarea>
+    </li>
+
+    <li>
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" class="form-control" value="{{ employee.city }}" required>
+    </li>
+
+    <li>
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" class="form-control" value="{{ employee.state }}" required>
+    </li>
+
+    <li>
+        <label for="pincode">Pincode:</label>
+        <input type="text" id="pincode" name="pincode" class="form-control" value="{{ employee.pincode }}" required>
+    </li>
+    <li>
+        <label for="date_of_birth">Date of Birth:</label>
+        <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" value="{{ employee.date_of_birth|date:'Y-m-d' }}" >
+    </li>
+    <li>
+        <label for="emergency_contact1">Emergency Contact 1:</label>
+        <input type="text" id="emergency_contact1" name="emergency_contact1" class="form-control" value="{{ employee.emergency_contact1 }}" required>
+    </li>
+    
+    <li>
+        <label for="emergency_contact_relation1">Relation to Emergency Contact 1:</label>
+        <input type="text" id="emergency_contact_relation1" name="emergency_contact_relation1" class="form-control" value="{{ employee.emergency_contact_relation1 }}" required>
+    </li>
+
+    
+    <li>
+        <label for="emergency_contact_relation1_name">Name of Emergency Contact 1:</label>
+        <input type="text" id="emergency_contact_relation1_name" name="emergency_contact_relation1_name" class="form-control" value="{{ employee.emergency_contact_relation1_name }}" required>
+    </li>
+
+    
+    <li class="checkbox-group">
+        <ul class="emp">
+        <label for="pancard">Pancard:</label><br>
+        <input type="radio" id="pancard_yes" name="pancard" value="yes" {% if employee.pancard == "yes" %}checked{% endif %}>
+        <label for="pancard_yes">Yes</label>
+        <input type="radio" id="pancard_no" name="pancard" value="no" {% if employee.pancard == "no" %}checked{% endif %}>
+        <label for="pancard_no">No</label>
+    </ul>
+    </li>
+    
+    <li class="checkbox-group">
+        <ul class="emp">
+        <label for="aadhar">Aadhar:</label><br>
+        <input type="radio" id="aadhar_yes" name="aadhar" value="yes" {% if employee.aadhar == "yes" %}checked{% endif %}>
+        <label for="aadhar_yes">Yes</label>
+        <input type="radio" id="aadhar_no" name="aadhar" value="no" {% if employee.aadhar == "no" %}checked{% endif %}>
+        <label for="aadhar_no">No</label>
+        </ul>
+    </li>
+    
+    <li class="checkbox-group">
+        <ul class="emp">
+        <label for="voter">Voter ID:</label><br>
+        <input type="radio" id="voter_yes" name="voter" value="yes" {% if employee.voter == "yes" %}checked{% endif %}>
+        <label for="voter_yes">Yes</label>
+        <input type="radio" id="voter_no" name="voter" value="no" {% if employee.voter == "no" %}checked{% endif %}>
+        <label for="voter_no">No</label>
+        </ul>
+    </li>
+    
+   
+
+    <li>
+        <label for="security_guard_training">Security Guard Training:</label>
+        <select id="security_guard_training" name="security_guard_training" class="form-control">
+            <option value="yes" {% if employee.security_guard_training %}selected{% endif %}>Yes</option>
+            <option value="no" {% if not employee.security_guard_training %}selected{% endif %}>No</option>
+        </select>
+    </li>
+
+    <li>
+        <label for="job_experience">Job Experience:</label>
+        <select id="job_experience" name="job_experience" class="form-control">
+            <option value="yes" {% if employee.job_experience %}selected{% endif %}>Yes</option>
+            <option value="no" {% if not employee.job_experience %}selected{% endif %}>No</option>
+        </select>
+    </li>
+
+    <li>
+        <label for="profile_picture">Profile Picture:</label>
+        <input type="file" id="profile_picture" name="profile_picture" class="form-control">
+    </li>
+
+    <li>
+        <label for="signature">Signature:</label>
+        <input type="file" id="signature" name="signature" class="form-control">
+    </li>
+
+    <li class="work-arrangements">
+        <label>Preferred Work Arrangements:</label>
+        <ul class="emp">
+            <li>
+                <input type="radio" name="preferred_work_arrangements" value="full_time" 
+                    {% if employee.preferred_work_arrangements == "full_time" %}checked{% endif %}> Full Time
+            </li>
+            <li>
+                <input type="radio" name="preferred_work_arrangements" value="weekends" 
+                    {% if employee.preferred_work_arrangements == "weekends" %}checked{% endif %}> Weekends
+            </li>
+            <li>
+                <input type="radio" name="preferred_work_arrangements" value="part_time" 
+                    {% if employee.preferred_work_arrangements == "part_time" %}checked{% endif %}> Part Time
+            </li>
+        </ul>
+    </li>
+
+    <li>
+        <label for="position">Position:</label>
+        <select name="position" id="position" class="form-control" required>
+            <option value="Security Guard" {% if employee.position == "Security Guard" %}selected{% endif %}>Security Guard</option>
+            <option value="Supervisor" {% if employee.position == "Supervisor" %}selected{% endif %}>Supervisor</option>
+        </select>
+    </li>
+
+    <li>
+        <label for="account_holder_name">Account Holder Name:</label>
+        <input type="text" id="account_holder_name" name="account_holder_name" class="form-control" value="{{ employee.account_holder_name }}" required>
+    </li>
+    <li>
+        <label for="bank_name">Bank Name:</label>
+        <input type="text" id="bank_name" name="bank_name" class="form-control" value="{{ employee.bank_name }}" required>
+    </li>
+
+    <li>
+        <label for="bank_account_number">Bank Account Number:</label>
+        <input type="text" id="bank_account_number" name="bank_account_number" class="form-control" value="{{ employee.bank_account_number }}" required>
+    </li>
+
+    <li>
+        <label for="ifsc_code">IFSC Code:</label>
+        <input type="text" id="ifsc_code" name="ifsc_code" class="form-control" value="{{ employee.ifsc_code }}" required>
+    </li>
+
+    <li>
+        <label for="branch_name">Branch Name:</label>
+        <input type="text" id="branch_name" name="branch_name" class="form-control" value="{{ employee.branch_name }}" required>
+    </li>
+
+    <li>
+        <label for="bank_address">Bank Address:</label>
+        <textarea id="bank_address" name="bank_address" class="form-control" required>{{ employee.bank_address }}</textarea>
+    </li>
+
+    <li>
+        <label for="qualification">Qualification:</label>
+        <select name="qualification" id="qualification" class="form-control" required>
+            <option value="">Select Qualification</option>
+            <option value="1" {% if employee.qualification == "1" %}selected{% endif %}>1</option>
+            <option value="2" {% if employee.qualification == "2" %}selected{% endif %}>2</option>
+            <option value="3" {% if employee.qualification == "3" %}selected{% endif %}>3</option>
+            <option value="4" {% if employee.qualification == "4" %}selected{% endif %}>4</option>
+            <option value="5" {% if employee.qualification == "5" %}selected{% endif %}>5</option>
+            <option value="6" {% if employee.qualification == "6" %}selected{% endif %}>6</option>
+            <option value="7" {% if employee.qualification == "7" %}selected{% endif %}>7</option>
+            <option value="8" {% if employee.qualification == "8" %}selected{% endif %}>8</option>
+            <option value="9" {% if employee.qualification == "9" %}selected{% endif %}>9</option>
+            <option value="10" {% if employee.qualification == "10" %}selected{% endif %}>10</option>
+            <option value="11" {% if employee.qualification == "11" %}selected{% endif %}>11</option>
+            <option value="12" {% if employee.qualification == "12" %}selected{% endif %}>12</option>
+            <option value="ITI" {% if employee.qualification == "ITI" %}selected{% endif %}>ITI</option>
+            <option value="Graduate" {% if employee.qualification == "Graduate" %}selected{% endif %}>Graduate</option>
+            <option value="Diploma" {% if employee.qualification == "Diploma" %}selected{% endif %}>Diploma</option>
+            <option value="PG" {% if employee.qualification == "PG" %}selected{% endif %}>PG</option>
+        </select>
+    </li>
+    
+    <li>
+        <label for="experience">Experience:</label>
+        <select name="experience" id="experience" class="form-control" required>
+            <option value="">Select Experience</option>
+            <option value="fresher" {% if employee.experience == "fresher" %}selected{% endif %}>Fresher</option>
+            <option value="1" {% if employee.experience == "1" %}selected{% endif %}>1 year</option>
+            <option value="2" {% if employee.experience == "2" %}selected{% endif %}>2 years</option>
+            <option value="3" {% if employee.experience == "3" %}selected{% endif %}>3 years</option>
+            <option value="4" {% if employee.experience == "4" %}selected{% endif %}>4 years</option>
+            <option value="5" {% if employee.experience == "5" %}selected{% endif %}>5 years</option>
+            <option value="6" {% if employee.experience == "6" %}selected{% endif %}>6 years</option>
+            <option value="7" {% if employee.experience == "7" %}selected{% endif %}>7 years</option>
+            <option value="8" {% if employee.experience == "8" %}selected{% endif %}>8 years</option>
+            <option value="9" {% if employee.experience == "9" %}selected{% endif %}>9 years</option>
+            <option value="10" {% if employee.experience == "10" %}selected{% endif %}>10 years</option>
+        </select>
+    </li>
+    
+    
+
+    <ul class="emp">
+                <li class="Salary-details">
+                    <br> <hr> <br>
+                    <h1>Salary Details</h1>
+                    <ul class="emp">
+
+
+    <!-- <h3>Salary Details</h3> -->
+    <li>
+        <label for="basic_salary">Basic Salary:</label>
+        <input type="number" step="0.01" id="basic_salary" name="basic_salary" class="form-control" value="{{ salary_details.basic_salary }}" required>
+    </li>
+    <li>
+        <label for="special_allowance">Special Allowance:</label>
+        <input type="number" step="0.01" id="special_allowance" name="special_allowance" class="form-control" value="{{ salary_details.special_allowance }}" required>
+    </li>
+
+    <li>
+        <label for="total">Total:</label>
+        <input type="number" step="0.01" id="total" name="total" class="form-control" value="{{ salary_details.total }}" required>
+    </li>
+
+    <li>
+        <label for="conveyance_allowance">Conveyance Allowance:</label>
+        <input type="number" step="0.01" id="conveyance_allowance" name="conveyance_allowance" class="form-control" value="{{ salary_details.conveyance_allowance }}" required>
+    </li>
+
+    <li>
+        <label for="education_allowance">Education Allowance:</label>
+        <input type="number" step="0.01" id="education_allowance" name="education_allowance" class="form-control" value="{{ salary_details.education_allowance }}" required>
+    </li>
+
+    <li>
+        <label for="travelling_allowance">Travelling Allowance:</label>
+        <input type="number" step="0.01" id="travelling_allowance" name="travelling_allowance" class="form-control" value="{{ salary_details.travelling_allowance }}" required>
+    </li>
+
+    <li>
+        <label for="hours_daily_duty">Hours Daily Duty:</label>
+        <input type="number" step="0.01" id="hours_daily_duty" name="hours_daily_duty" class="form-control" value="{{ salary_details.hours_daily_duty }}" required>
+    </li>
+
+    <li>
+        <label for="hra">HRA:</label>
+        <input type="number" step="0.01" id="hra" name="hra" class="form-control" value="{{ salary_details.hra }}" required>
+    </li>
+
+    <li>
+        <label for="pf">PF:</label>
+        <input type="number" step="0.01" id="pf" name="pf" class="form-control" value="{{ salary_details.pf }}" required>
+    </li>
+    <li>
+        <label for="gratuity">Gratuity:</label>
+        <input type="number" step="0.01" id="gratuity" name="gratuity" class="form-control" value="{{ salary_details.gratuity }}" required>
+    </li>
+    <li>
+        <label for="leave_with_wages">Leave with Wages:</label>
+        <input type="number" step="0.01" id="leave_with_wages" name="leave_with_wages" class="form-control" value="{{ salary_details.leave_with_wages }}" required>
+    </li>
+    <li>
+        <label for="esic">ESIC:</label>
+        <input type="number" step="0.01" id="esic" name="esic" class="form-control" value="{{ salary_details.esic }}" required>
+    </li>
+    <li>
+        <label for="paid_holiday">Paid Holiday:</label>
+        <input type="number" step="0.01" id="paid_holiday" name="paid_holiday" class="form-control" value="{{ salary_details.paid_holiday }}" required>
+    </li>
+    <li>
+        <label for="bonus">Bonus:</label>
+        <input type="number" step="0.01" id="bonus" name="bonus" class="form-control" value="{{ salary_details.bonus }}" required>
+    </li>
+    <li>
+        <label for="uniform">Uniform:</label>
+        <input type="number" step="0.01" id="uniform" name="uniform" class="form-control" value="{{ salary_details.uniform }}" required>
+    </li>
+    <li>
+        <label for="total_b">Total B:</label>
+        <input type="number" step="0.01" id="total_b" name="total_b" class="form-control" value="{{ salary_details.total_b }}" required>
+    </li>
+    <li>
+        <label for="total_c">Total C:</label>
+        <input type="number" step="0.01" id="total_c" name="total_c" class="form-control" value="{{ salary_details.total_c }}" required>
+    </li>
+    <!-- <li>
+        <label for="advance_payment">Advance Payment:</label>
+        <input type="number" step="0.01" id="advance_payment" name="advance_payment" class="form-control" value="{{ salary_details.advance_payment }}">
+    </li> -->
+    <li>
+        <label for="food_allowance">Food Allowance:</label>
+        <input type="number" step="0.01" id="food_allowance" name="food_allowance" class="form-control" value="{{ salary_details.food_allowance }}">
+    </li>
+
+    <!-- Company Selection -->
+    <li>
+        <label for="company">Company:</label>
+        <select id="company" name="company" class="form-control">
+            <option value="">Select a company</option>
+            {% for company in companies %}
+            <option value="{{ company.id }}" {% if company.id == employee.company.id %}selected{% endif %}>{{ company.user.first_name }}</option>
+            {% endfor %}
+        </select>
+    </li>
+                    </ul>
+
+    <!-- Submit Button -->
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Update Details</button>
+    </div>
+</form>
+
+</ul>
+</div>
+</body>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form from submitting immediately
+    
+        // Show the notification
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = 'Employee details updated successfully!';
+        document.body.appendChild(notification);
+        
+        // Fade in the notification
+        setTimeout(() => {
+            notification.style.opacity = '1';
+        }, 10);
+    
+        // Fade out and remove the notification after 3 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                notification.remove();
+            }, 500);
+        }, 3000);
+    
+        // Submit the form after showing the notification
+        setTimeout(() => {
+            this.submit(); // Submit the form
+        }, 3000); // Delay the form submission to allow notification to be seen
+    
+     
+    });
+    
+   
+    
+    </script>
+
+{% endblock %}

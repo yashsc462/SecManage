@@ -1,0 +1,150 @@
+{% extends 'admin/basead.html' %}
+
+{% block content %}
+
+<style>
+    .card {
+        width: 95%;
+        margin: 2% auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    /* Flexbox container to hold the input fields in one row */
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    label {
+        margin-bottom: 10px;
+        font-size: 1.0em;
+        color: #333;
+    }
+
+    select, input {
+        padding: 10px;
+        font-size: 1.0em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .input-group {
+        flex: 1;
+    }
+
+    /* Button styling */
+    button {
+        padding: 10px 20px;
+        font-size: 1.1em;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        display: block;
+        margin: 0 auto;
+        transform: scale(1);
+        margin-top: 20px;
+    }
+
+    button:hover {
+        background-color: #555;
+        transform: scale(1.04);
+    }
+
+    /* Notification styling */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 1em;
+        z-index: 1000;
+        display: none;
+    }
+
+</style>
+
+<div class="card">
+    <h1>Update Partial Uniform for {{ employee.first_name }} {{ employee.last_name }}</h1>
+
+    <form method="POST" action="{% url 'admin_partial_uniform' employee.emp_id %}" id="updateUniformForm">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <!-- Uniform Item -->
+            <div class="input-group">
+                <label for="partialuniform">Uniform Item:</label>
+                <select id="partialuniform" name="partialuniform">
+                    <option value="shirt" {% if employees.partialuniform == "shirt" %}selected{% endif %}>Shirt</option>
+                    <option value="pant" {% if employees.partialuniform == "pant" %}selected{% endif %}>Pant</option>
+                    <option value="belt" {% if employees.partialuniform == "belt" %}selected{% endif %}>Belt</option>
+                    <option value="stick" {% if employees.partialuniform == "stick" %}selected{% endif %}>Stick</option>
+                    <option value="whistle" {% if employees.partialuniform == "whistle" %}selected{% endif %}>Whistle</option>
+                    <option value="hat" {% if employees.partialuniform == "hat" %}selected{% endif %}>Hat</option>
+                </select>
+            </div>
+
+            <!-- Price -->
+            <div class="input-group">
+                <label for="price_partial_uniform">Price:</label>
+                <input type="text" id="price_partial_uniform" name="price_partial_uniform" value="{{ salary_detail.price_partial_uniform }}" required>
+            </div>
+        </div>
+
+        <!-- Update button centered below the input fields -->
+        <button type="submit" class="btn">Update Partial Uniform</button>
+        
+    </form>
+</div>
+
+<!-- Notification div -->
+<div class="notification" id="notification">Amount Updated Successfully!</div>
+
+<!-- Add the JavaScript -->
+<script>
+    document.getElementById("updateUniformForm").onsubmit = function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Submit the form via AJAX
+        const formData = new FormData(this);
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '', true); // Send the form to the current page
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Show notification on success
+                const notification = document.getElementById('notification');
+                notification.style.display = 'block';
+
+                // Hide the notification after 3 seconds and redirect
+                setTimeout(function() {
+                    notification.style.display = 'none';
+                    window.location.href = "{% url 'dashboard' %}"; // Redirect to dashboard.html
+                }, 3000);
+            }
+        };
+        
+        xhr.send(formData);
+    };
+</script>
+
+{% endblock content %}

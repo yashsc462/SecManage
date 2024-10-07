@@ -1,0 +1,263 @@
+{% extends 'FO/basefo.html' %}
+
+{% block content %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    h1 {
+        text-align: center;
+        color: #333333;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        animation: slideIn 1s ease-in-out;
+    }
+    .card {
+        width: 95%;
+        margin: 2% auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 1s ease-in;
+    }
+    .form-row {
+        margin-bottom: 15px;
+    }
+    .form-row label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    .form-row input, .form-row select {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+    .form-row-inline {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    .form-row-inline .form-row {
+        flex: 1;
+    }
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 20px;
+        animation: grow 1s ease-in-out;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #dddddd;
+    }
+    th {
+        background-color: #312929;
+        color: #ffffff;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    tr:hover {
+        background-color: #e9ecef;
+    }
+    td {
+        position: relative;
+    }
+    td:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 2px;
+        width: 0;
+        background-color: #000000;
+    }
+    td:hover:before {
+        width: 100%;
+    }
+    th:first-child {
+        border-top-left-radius: 10px;
+    }
+    th:last-child {
+        border-top-right-radius: 10px;
+    }
+    tr:last-child td:first-child {
+        border-bottom-left-radius: 10px;
+    }
+    tr:last-child td:last-child {
+        border-bottom-right-radius: 10px;
+    }
+    .submit-btn {
+        background-color: #333333;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        margin: auto;
+        display: flex;
+    }
+    .submit-btn:hover {
+        background-color: #0056b3;
+        transform: scale(1.04);
+    }
+    .loading {
+        display: none;
+        font-size: 16px;
+        color: #007bff;
+    }
+    .notification {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #28a745;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+    z-index: 1000;
+    opacity: 0; /* Start hidden (invisible) */
+    transition: opacity 1s ease-in-out; /* Smooth fade effect over 1 second */
+}
+
+</style>
+
+<div class="notification" id="notification">Attendance Submitted Successfully!</div>
+
+<div class="card">
+    <h1>Mark Attendance</h1>
+    <form id="filterForm" method="get" action="{% url 'markattendance' %}">
+        <div class="form-row-inline">
+            <div class="form-row">
+                <label for="date">Select Date:</label>
+                <input type="date" id="date" name="date" value="{{ date }}" required>
+            </div>
+            <div class="form-row">
+                <label for="company">Company:</label>
+                <select id="company" name="company" required>
+                    <option value="">Select Company</option>
+                    {% for company in companies %}
+                        <option value="{{ company.id }}" {% if company.id|stringformat:"s" == company_id %}selected{% endif %}>{{ company.user.first_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="submit-btn">Filter</button>
+    </form>
+
+    {% if employees %}
+    <!-- <form id="attendanceForm" method="post" action="{% url 'submit_attendance' %}" onsubmit="return validateForm()"> -->
+    <form id="attendanceForm" method="post" action="{% url 'submit_attendance' %}" onsubmit="return validateForm(event)">
+
+        {% csrf_token %}
+        <input type="hidden" name="date" value="{{ date }}">
+        <input type="hidden" name="company" value="{{ company_id }}">
+    
+        <!-- Include hidden inputs for employee IDs -->
+        {% for employee in employees %}
+            <input type="hidden" name="employee_ids" value="{{ employee.id }}">
+        {% endfor %}
+    
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Full Name</th>
+                    <th>Status</th>
+                    <th>Shift</th>
+                    <th>Notes</th>
+                    <th>Submit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.emp_id }}</td>
+                    <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                    <td>
+                        <select name="status_{{ employee.id }}" >
+                            <option value="">Select Status</option>
+                            <option value="P">Present</option>
+                            <option value="A">Absent</option>
+                            <option value="L">Leave</option>
+                            <option value="H">Holiday</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="shift_{{ employee.id }}" >
+                            <option value="">Select Shift</option>
+                            {% for shift in shifts %}
+                                <option value="{{ shift.id }}">{{ shift.description }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td><input type="text" name="notes_{{ employee.id }}" maxlength="255"></td>
+                    <td>
+                        <button type="submit" name="submit_{{ employee.id }}" value="{{ employee.id }}" class="submit-btn">Submit</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+    {% endif %}
+</div>
+
+<script>
+ function validateForm(event) {
+    // Prevent form submission immediately
+    event.preventDefault();
+
+    const date = new Date(document.getElementById('date').value);
+    const today = new Date();
+    if (date.toDateString() !== today.toDateString()) {
+        alert("Attendance can only be marked for today's date.");
+        return false;
+    }
+
+    let allFieldsFilled = true;
+    document.querySelectorAll('select[name^="status_"], select[name^="shift_"]').forEach(select => {
+        if (select.value === "") {
+            allFieldsFilled = false;
+        }
+    });
+
+    if (!allFieldsFilled) {
+        alert("Please ensure all fields are filled before submitting.");
+        return false;
+    }
+
+    const notification = document.getElementById('notification');
+    
+    // Show the notification
+    notification.style.display = 'block';
+    notification.style.opacity = '1';
+
+    // Set a timeout to fade the notification after 5 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';  // Fade out the notification
+    }, 3000);  // Show for 5 seconds
+
+    // Set another timeout to hide the notification and submit the form after the fade-out is complete
+    setTimeout(() => {
+        notification.style.display = 'none';
+        document.getElementById('attendanceForm').submit();  // Submit the form
+    },4000);  // 5000ms display + 1000ms fade-out
+
+    return true;
+}
+
+
+
+</script>
+
+{% endblock %}

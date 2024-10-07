@@ -1,0 +1,433 @@
+{% extends 'admin/basead.html' %}
+
+{% block content %}
+
+<style>
+    .cardBox {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 50px;
+    margin-left: 130px;
+}
+
+.card {
+    width: 95%;
+    margin: 2% auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in;
+    position: relative;
+}
+
+.cardBox .card {
+    width: auto;
+    background: var(--white);
+    padding: 30px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+}
+
+.cardBox .card .numbers {
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: var(--blue);
+}
+
+.cardBox .card .cardName {
+    color: var(--black2);
+    font-size: 1.1rem;
+    margin-top: 5px;
+}
+
+.cardBox .card .iconBx {
+    font-size: 3.5rem;
+    color: var(--black2);
+}
+
+.cardBox .card:hover {
+    background: var(--blue);
+}
+
+.cardBox .card:hover .numbers,
+.cardBox .card:hover .cardName,
+.cardBox .card:hover .iconBx {
+    color: var(--white);
+}
+
+.chart-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chart-container {
+    width: 100%;
+    height: 200px;
+}
+
+.chart {
+    width: 100%;
+    max-width: 200px;
+    max-height: 200px;
+}
+
+/* Pop-up in birthday card */
+.birthday-container {
+    max-width: 950px;
+    margin: 20px auto;
+    padding: 20px;
+    background-image: linear-gradient(to right, rgba(255,0,0,0), rgba(255,0,0,1));
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    animation: pop-up 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+@keyframes pop-up {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.birthday-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.birthday-item {
+    padding: 12px;
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+}
+
+.birthday-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.birthday-container h3,
+.birthday-container p {
+    text-align: center;
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out forwards;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.card h1 {
+    text-align: center;
+    color: #333333;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 95%;
+    border-collapse: collapse;
+    margin: 20px 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+table:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+thead {
+    background: #333333;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+td {
+    font-size: 14px;
+    color: #333;
+}
+
+td:first-child {
+    font-weight: bold;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    table {
+        border: 0;
+    }
+
+    table thead {
+        display: none;
+    }
+
+    table tbody tr {
+        display: block;
+        margin-bottom: 10px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    table tbody td {
+        display: block;
+        text-align: right;
+        font-size: 14px;
+        position: relative;
+        padding-left: 50%;
+    }
+
+    table tbody td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 10px;
+        font-weight: bold;
+        text-align: left;
+        color: #007bff;
+    }
+}
+
+select {
+    width: 250px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 16px;
+    color: #333;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+select:hover {
+    border-color: #888;
+}
+
+select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+select {
+    cursor: pointer;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.button:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+/* Mobile Responsive Styles for Buttons */
+@media (max-width: 768px) {
+    .pdf-button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+</style>
+
+<body>
+    <div class="card">
+    {% comment %} <div class="birthday-container">
+        {% if todays_birthdays %}
+            <h3>Today's Birthdays ({{ today }}):</h3>
+            <ul class="birthday-list">
+                {% for birthday in todays_birthdays %}
+                    <li class="birthday-item">{{ birthday.user_profile.user.email }} - {{ birthday.description }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No birthdays today.</p>
+        {% endif %}
+    </div>  {% endcomment %}
+
+     {% if todays_birthdays %}
+<div class="birthday-container">
+    <h3>Today's Birthdays </h3>
+    <ul class="birthday-list">
+        {% for birthday in todays_birthdays %}
+            <li class="birthday-item">{{ birthday.user_profile.user.first_name}} - {{ birthday.description }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %} 
+
+    
+<form method="GET">
+    <select name="company_id" onchange="this.form.submit()">
+        <option value="">All Companies</option>
+        {% for company in companies %}
+            <option value="{{ company.id }}" {% if selected_company and selected_company.id == company.id %}selected{% endif %}>
+                {{ company.user.first_name }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
+<div class="cardBox">
+    <div class="card">
+        <div>
+            <div class="numbers">{{ total_employees }}</div>
+            <div class="cardName">Total Employees</div>
+        </div>
+    </div>
+    <div class="card">
+        <div>
+            <div class="numbers">{{ employees_present }}</div>
+            <div class="cardName">Employees Present</div>
+        </div>
+    </div>
+    <div class="card">
+        <div>
+            <div class="numbers">{{ employees_absent }}</div>
+            <div class="cardName">Employees Absent</div>
+        </div>
+    </div>
+    <!-- Add more cards or charts as needed -->
+
+
+</div>
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Employee ID</th>
+                <th>Full Name</th>
+                <th>Action</th>
+                <th>View PDF</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td data-label="Employee ID">{{ employee.emp_id }}</td>
+                <td data-label="Full Name">{{ employee.first_name }} {{ employee.middle_name }} {{ employee.last_name }}</td>
+                <td>
+                    <a href="{% url 'admin_update_emp' employee.emp_id %}" class="button">Update Employee</a>
+                </td>
+                <td>
+                    {% if employee.pdf_file %}
+                        <a href="{% url 'view_pdf' employee.id %}" target="_blank" class="button">View PDF</a>
+                    {% else %}
+                        No PDF available
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No employees found for this company.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('employeeChart').getContext('2d');
+    const employeeChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Employees Present', 'Employees Absent'],
+            datasets: [{
+                label: 'Employee Statistics',
+                data: [65, 35], // Dummy data
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Employee Statistics'
+                }
+            }
+        },
+    });
+</script>
+
+</div>
+</body>
+
+{% endblock %}

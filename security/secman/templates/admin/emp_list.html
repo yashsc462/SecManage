@@ -1,0 +1,239 @@
+{% extends 'admin/basead.html' %}
+
+{% block content %}
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .card {
+            width: 95%;
+            margin: 2% auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* animation: fadeIn 1s ease-in; */
+        }
+
+        .card h1 {
+            text-align: center;
+            color: #333333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            /* animation: slideIn 1s ease-in-out; */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; */
+        }
+
+        table:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        thead {
+            background: #333333;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            /* transition: background-color 0.3s ease-in-out; */
+        }
+
+        th {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+            /* transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out; */
+            /* transform: scale(1.01); */
+        }
+
+        td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        td:first-child {
+            font-weight: bold;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            table {
+                border: 0;
+            }
+
+            table thead {
+                display: none;
+            }
+
+            table tbody tr {
+                display: block;
+                margin-bottom: 10px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            table tbody td {
+                display: block;
+                text-align: right;
+                font-size: 14px;
+                position: relative;
+                padding-left: 50%;
+            }
+
+            table tbody td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 50%;
+                padding-left: 10px;
+                font-weight: bold;
+                text-align: left;
+                color: #007bff;
+            }
+        }
+
+        select {
+            width: 250px;           /* Adjust the width as per your layout */
+            padding: 10px;          /* Add some padding for a better look */
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 5px;     /* Rounded corners */
+            background-color: #fff; /* White background */
+            font-size: 16px;        /* Font size */
+            color: #333;            /* Text color */
+            outline: none;          /* Remove default focus outline */
+            transition: all 0.3s ease; /* Smooth transition for hover and focus effects */
+        }
+
+        /* Hover effect */
+        select:hover {
+            border-color: #888;     /* Darker border on hover */
+        }
+
+        /* Focus effect */
+        select:focus {
+            border-color: #007bff;  /* Blue border on focus */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle shadow on focus */
+        }
+
+        /* Optional: If you want a different cursor on hover */
+        select {
+            cursor: pointer;
+        }
+
+
+    button,
+        .button-link {
+            display: flex;
+            align-items: center;
+            width: fit-content;
+            padding: 10px 20px; /* Using em for relative padding */
+            border: none;
+            border-radius: 4px;
+            background-color: #312929;
+            color: #fff;
+            font-size: 1rem; /* Use rem for font size for scalability */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            text-decoration: none; /* Remove underline for links */
+            margin: auto;
+        }
+
+        button:hover,
+        .button-link:hover {
+            background-color: #000000;
+            transform: scale(1.05);
+        }
+
+        button:active,
+        .button-link:active {
+            background-color: #2e3741;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Employee Work Hours</h1>
+
+        <!-- Add a form for the company filter -->
+        <form method="get" action="{% url 'emp_list' %}">
+            <label for="company">Filter by Company:</label>
+            <select name="company_id" id="company" onchange="this.form.submit()">
+                <option value="">All Companies</option>
+                {% for company in companies %}
+                    <option value="{{ company.id }}" {% if selected_company == company.id|stringformat:"s" %}selected{% endif %}>
+                        {{ company.user.first_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Full Name</th>
+                    <th>Action</th>
+                    <th>View PDF</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td data-label="Employee ID">{{ employee.emp_id }}</td>
+                    <td data-label="Full Name">{{ employee.first_name }} {{ employee.middle_name }} {{ employee.last_name }}</td>
+                    <td>
+                        <a href="{% url 'admin_update_emp' employee.emp_id %}" class="button-link">Update Employee</a>
+                    </td>
+                    <td>
+                        {% if employee.pdf_file %}
+                            <a href="{% url 'view_pdf' employee.id %}" target="_blank" class="button-link">View PDF</a>
+                        {% else %}
+                            No PDF available
+                        {% endif %}
+                    </td>
+                    
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No employees found for this company.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+
+
+{% endblock %}
